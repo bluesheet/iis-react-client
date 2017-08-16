@@ -2,63 +2,70 @@ import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import Sider from '../sider'
 import './style.scss'
-import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
-import * as actions from '../../containers/action'
-import ProgressBar from '../../components/progress-bar'
+import Header from '../header'
+import Permission from '../../components/permission'
 
-@connect(
-  state => ({
-    ...state.Root
-  }),
-  dispatch => ({
-    actions: bindActionCreators({...actions}, dispatch)
-  })
-)
+
 export default class CoreLayout extends PureComponent {
   static propTypes = {
-    children: PropTypes.node
+    children: PropTypes.node,
+    pageCode: PropTypes.string,
+    auth: PropTypes.object,
   }
 
   static defaultProps = {
-    children: null
-  }
-
-  componentDidMount () {
-    const { initialPending, initialProgress } = this.props
-  }
-
-  componentWillReceiveProps (nextProps) {
-    const { initialPending, initialProgress } = nextProps
-    if (initialPending) {
-      if (initialProgress >= 100) {
-        this.props.actions.initialComplete()
-      }
-      else {
-        this.props.actions.initialProgress(50)
-      }
-    }
+    children: null,
+    pageCode: 'none',
+    auth: null,
   }
   
   render () {
-    const { initialPending, initialProgress } = this.props
-    let initialMaskStyle = initialProgress === 100 ? {
-      animation: 'hideMask 1.8s'
-    } : null
+    const { location, children, auth, pageCode } = this.props
+    const permissionView = this.renderPermission()
     return (
-      <div className={'layout-warpper'}>
-        <Sider location={this.props.location} />
-        <div className={'layout-page-container'}>
-          <div>{this.props.children}</div>
+      <div className={'layout-warpper'} style={{ flexDirection: 'column' }}>
+        <Header />
+        <div className={'layout-warpper'}>
+          <Sider location={location} />
+          <Permission 
+            className={'layout-page-container'}
+            pageCode={pageCode} 
+            flag={auth && auth.group.flag || []}
+            viewComponent={permissionView}>
+            <div>{children}</div>
+          </Permission>
         </div>
-        {initialPending ? (
-          <div className={'layout-initial-mask'} style={initialMaskStyle}>
-            <i className={'fa fa-cog fa-spin fa-2x fa-fw'} style={{ color: '#999', marginBottom: 8 }}></i>
-            <div className={'progress-span'}>Loading...{`${initialProgress}%`}</div>
-            <ProgressBar pending={`${initialProgress}%`} />
+      </div>
+    )
+  }
+
+  renderPermission () {
+    return (
+      <div className="layout-page-not-found">
+        <div className="page-not-found">
+          <h1>401</h1>
+          <div>
+            <h2>The page is not allowed.</h2>
           </div>
-        ) : null}
+        </div>
       </div>
     )
   }
 }
+
+import { Breadcrumb } from 'antd'
+import { Link } from 'react-router-dom'
+
+export const LayoutBreadcrumb = ({ data }) => (
+  <Breadcrumb>
+    {data.map( (item, i) => {
+      return (
+        <Breadcrumb.Item>
+          {item.link ? (
+            <Link to={item.link}>{item.name}</Link>
+          ) : item.name}
+        </Breadcrumb.Item>
+      )
+    })}
+  </Breadcrumb>
+)

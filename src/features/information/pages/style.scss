@@ -1,0 +1,23 @@
+
+
+.ant-table-tbody > tr > td {
+  font-family: Menlo, "Ubuntu Mono", Consolas, "Courier New", "Microsoft Yahei", "Hiragino Sans GB", "WenQuanYi Micro Hei", sans-serif;
+
+  span.record-id {
+    color: #0e77ca;
+  }
+
+  div.word-ellipsis {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    //width: 200px;
+    overflow: hidden;
+    display: block;
+
+    span {
+      white-space: nowrap;
+    }
+
+    
+  }
+}

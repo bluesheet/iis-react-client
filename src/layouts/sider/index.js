@@ -6,15 +6,12 @@ import './style.scss'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import * as actions from '../../containers/action'
+import { Menu, Icon, Button } from 'antd'
+const SubMenu = Menu.SubMenu
 
-@connect(
-  state => ({
-    ...state.Root
-  }),
-  dispatch => ({
-    actions: bindActionCreators({...actions}, dispatch)
-  })
-)
+import { menuSub as InformationMenuSub } from '../../features/information'
+
+
 export default class Sider extends PureComponent {
   static propTypes = {
     location: PropTypes.object
@@ -24,45 +21,56 @@ export default class Sider extends PureComponent {
     location: null
   }
 
+  constructor (props) {
+    super(props)
+    this.state = {
+      collapsed: false
+    }
+  }
+
   componentDidMount () {
-    const { initialPending, initialProgress } = this.props
-    initialPending && this.props.actions.initialProgress(35)
+    //const { initialPending, initialProgress } = this.props
+    //initialPending && this.props.actions.initialProgress(65)
   }
   
   render () {
+    const { location } = this.props
+    const { pathname } = location
+    const pathMatch = pathname.match(/^(\/)([a-z]+)/)
     return (
-      <div className={'layout-sider'}>
-        {renderRouteConfig(Routes, this.props.location)}
+      <div className={'layout-sider'} 
+        style={this.state.collapsed ? { flex: '0 0 64px' } : null}>
+        <div className={'menu-collapsed'} 
+          onClick={() => this.setState({ collapsed: !this.state.collapsed })}>
+          <Icon type={this.state.collapsed ? 'menu-unfold' : 'menu-fold'} />
+        </div>
+        <Menu
+          mode={'inline'}
+          theme={'dark'}
+          inlineCollapsed={this.state.collapsed}
+          defaultOpenKeys={[pathMatch && pathMatch[2]]}
+          selectedKeys={[pathname.toLowerCase()]}
+          >
+          {this.renderSubMenu(`information`, `信息数据管理`, `appstore`, InformationMenuSub)}
+        </Menu>
       </div>
+    )
+  }
+
+  renderSubMenu (key, name, icon, data) {
+    return (
+      <SubMenu
+        key={key}
+        title={<span><Icon type={icon || 'appstore'} /><span>{name}</span></span>} >
+        {data.map( (item, i) => {
+          return(
+            <Menu.Item key={`/${item.path}/${item.key}`}>
+              <Link to={`/${item.path}/${item.key}`}>{item.name}</Link>
+            </Menu.Item>
+          )
+        })}
+      </SubMenu>
     )
   }
 }
 
-function renderRouteConfig (routes, location, contextPath = '') {
-  return (
-    <ul>
-    {routes.map( (item, i) => {
-      let newContextPath
-      if (/^\//.test(item.path)) {
-        newContextPath = item.path
-      } else {
-        newContextPath = `${contextPath}/${item.path}`
-      }
-      newContextPath = newContextPath.replace(/\/+/g, '/')
-      if (!item.isIndex) {
-        return (
-          <li key={i}>
-            {item.path ? (
-              <Link to={newContextPath} className={location.pathname === newContextPath ? 'sider-nav-active' : ''}>{item.name}</Link>
-            ) : (
-              <span>{item.name}</span>
-            )}
-            {item.childRoutes && item.childRoutes.length > 0 && renderRouteConfig(item.childRoutes, location, item.path)}
-          </li>
-        )
-      }
-      
-    })}
-    </ul>
-  )
-}

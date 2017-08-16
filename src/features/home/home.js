@@ -7,6 +7,7 @@ import './style.scss'
 
 @connect(
   state => ({
+    auth: state.Passport.auth,
     ...state.Home
   }),
   dispatch => ({
@@ -23,9 +24,9 @@ export default class Home extends Component {
   }
 
   render () {
-    const { location, counts } = this.props
+    const { location, counts, auth } = this.props
     return (
-      <CoreLayout location={this.props.location}>
+      <CoreLayout location={this.props.location} auth={auth}>
         <h1>This is a React Application!</h1>
         <span>::pathname:: => '{location.pathname}'</span>
         <h2>Demos</h2>

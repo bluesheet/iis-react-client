@@ -5,33 +5,22 @@
 .layout-sider {
   //width: 200px;
   flex: 0 0 260px;
-  background-color: #eaedf1;
+  background-color: #333;
+  overflow-y: auto;
+  transition: all .3s ;
+  
+  .menu-collapsed {
+    height: 30px;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    color: rgba(255, 255, 255, 0.67);
+    background: #333;
+    transition: all .3s ;
+    cursor: pointer;
 
-  >ul {
-    padding-right: 20px;
-  }
-
-  ul {
-    list-style: none;
-    padding-left: 20px;
-
-    li {
-      line-height: 1.8;
-      margin: 8px 0;
-
-      a {
-        display: block;
-        text-decoration: none;
-        padding: 0 10px;
-        color: #666;
-        transition: all .8s ;
-
-        &:hover,
-        &.sider-nav-active {
-          background-color: #999;
-          color: #fff;
-        }
-      }
+    &:hover {
+      color: #fff;
     }
   }
 }

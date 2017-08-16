@@ -21,7 +21,7 @@ const ACTION_HANDLERS = {
     const { payload } = action
     return {
       ...state,
-      initialProgress: state.initialProgress + payload
+      initialProgress: payload.pending
     }
   },
 }
